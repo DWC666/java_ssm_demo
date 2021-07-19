@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:p="http://www.springframework.org/schema/p"
+	xmlns:mvc="http://www.springframework.org/schema/mvc"
+	xsi:schemaLocation="http://www.springframework.org/schema/mvc http://www.springframework.org/schema/mvc/spring-mvc-4.0.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
+
+    <!--use-default-filters="false"必须有，否则spring中声明的事务可能不生效-->
+    <context:component-scan base-package="com.dwc.crowdfunding.*" use-default-filters="false">
+        <context:include-filter type="annotation" expression="org.springframework.stereotype.Controller"/>
+    </context:component-scan>
+
+    <!-- 启用注解功能 -->
+    <context:annotation-config />
+    
+    <!-- 字符串字符编码转换 -->
+    <bean class="org.springframework.web.servlet.mvc.annotation.AnnotationMethodHandlerAdapter" >
+        <property name="messageConverters">   
+	         <list>
+                 <!-- 将消息转换为json串 -->
+	             <bean class="org.springframework.http.converter.json.MappingJacksonHttpMessageConverter">   
+	                <property name="supportedMediaTypes">
+	                      <list>
+	                          <value>application/json;charset=UTF-8</value>
+	                     </list>   
+	                </property>   
+	             </bean>   
+	         </list>   
+	    </property>
+    </bean>
+
+	<!--视图解析器-->
+    <bean class="org.springframework.web.servlet.view.InternalResourceViewResolver">
+        <property name="viewClass" value="org.springframework.web.servlet.view.JstlView"/>
+        <property name="prefix" value="/WEB-INF/jsp/"/>
+        <property name="suffix" value=".jsp"/>
+    </bean>
+
+    <!--异常解析器-->
+    <bean id="exceptionResolver"  
+        class="org.springframework.web.servlet.handler.SimpleMappingExceptionResolver">
+        <!--   异常解析器捕获异常后，会将异常对象放入request域中，属性默认名称为 exception  -->
+        <property name="exceptionAttribute" value="exception" />
+        <property name="exceptionMappings">  
+            <props>
+                <!--这里也会添加前缀"/WEB-INF/jsp/" 和后缀 ".jsp"-->
+                <prop key="java.lang.Exception">error/error</prop>
+                <prop key="com.dwc.crowdfunding.exception.LoginFailException">login</prop>
+            </props>  
+        </property>  
+    </bean>
+
+    <!--文件上传配置-->
+    <bean id="multipartResolver" class="org.springframework.web.multipart.commons.CommonsMultipartResolver" p:defaultEncoding="UTF-8">
+        <property name="maxUploadSize" value="2097152"/>
+        <property name="resolveLazily" value="true"/>
+    </bean>
+
+    <!--声明拦截器-->
+    <mvc:interceptors>
+        <bean id="loginInterceptor" class="com.dwc.crowdfunding.interceptor.LoginInterceptor" />
+        <bean id="authInterceptor" class="com.dwc.crowdfunding.interceptor.AuthInterceptor" />
+    </mvc:interceptors>
+
+</beans>

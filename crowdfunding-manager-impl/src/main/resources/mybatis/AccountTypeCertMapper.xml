@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.dwc.crowdfunding.manager.dao.AccountTypeCertMapper" >
+  <resultMap id="BaseResultMap" type="com.dwc.crowdfunding.bean.AccountTypeCert" >
+    <id column="id" property="id" jdbcType="INTEGER" />
+    <result column="accttype" property="acctType" jdbcType="INTEGER" />
+    <result column="certid" property="certId" jdbcType="INTEGER" />
+  </resultMap>
+
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer" >
+    delete from t_account_type_cert
+    where id = #{id,jdbcType=INTEGER}
+  </delete>
+
+  <delete id="deleteAcctTypeCert" parameterType="com.dwc.crowdfunding.bean.AccountTypeCert" >
+    delete from t_account_type_cert
+    where certid = #{certId} and accttype = #{acctType}
+  </delete>
+
+  <insert id="insert" parameterType="com.dwc.crowdfunding.bean.AccountTypeCert" >
+    insert into t_account_type_cert (accttype, certid
+      )
+    values (#{acctType}, #{certId})
+  </insert>
+
+  <update id="updateByPrimaryKey" parameterType="com.dwc.crowdfunding.bean.AccountTypeCert" >
+    update t_account_type_cert
+    set accttype = #{acctType},
+      certid = #{certId}
+    where
+      id = #{id}
+  </update>
+
+  <select id="selectByPrimaryKey" resultMap="BaseResultMap" parameterType="java.lang.Integer" >
+    select id, accttype, certid
+    from t_account_type_cert
+    where id = #{id,jdbcType=INTEGER}
+  </select>
+
+  <select id="selectAll" resultMap="BaseResultMap" >
+    select id, accttype, certid
+    from t_account_type_cert
+  </select>
+
+  <select id="queryAcctTypeCerts" resultType="Map" >
+    select accttype, certid
+    from t_account_type_cert
+  </select>
+</mapper>
